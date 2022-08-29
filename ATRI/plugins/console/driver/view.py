@@ -40,18 +40,12 @@ def handle_runtime_info(token: str):
 
 def handle_message_deal_info(token: str):
     auth, data = auth_token(token)
-    if not auth:
-        return data
-
-    return {"status": 200, "data": get_message_deal_info()}
+    return {"status": 200, "data": get_message_deal_info()} if auth else data
 
 
 def handle_get_service_list(token: str):
     auth, data = auth_token(token)
-    if not auth:
-        return data
-
-    return {"status": 200, "data": get_service_list()}
+    return {"status": 200, "data": get_service_list()} if auth else data
 
 
 def handle_control_service(
@@ -70,18 +64,16 @@ def handle_control_service(
     is_ok, data = control_service(
         service, is_enabled, enabled_user, enabled_group, disable_user, disable_group
     )
-    if not is_ok:
-        return {"status": 422, "msg": "Dealing service data failed"}
-
-    return {"status": 200, "data": data}
+    return (
+        {"status": 200, "data": data}
+        if is_ok
+        else {"status": 422, "msg": "Dealing service data failed"}
+    )
 
 
 def handle_get_block_list(token: str):
     auth, data = auth_token(token)
-    if not auth:
-        return data
-
-    return {"status": 200, "data": get_block_list()}
+    return {"status": 200, "data": get_block_list()} if auth else data
 
 
 def handle_edit_block(
@@ -95,7 +87,8 @@ def handle_edit_block(
         return data
 
     is_ok, data = edit_block_list(is_enabled, user_id, group_id)
-    if not is_ok:
-        return {"status": 422, "msg": "Dealing block data failed"}
-
-    return {"status": 200, "data": data}
+    return (
+        {"status": 200, "data": data}
+        if is_ok
+        else {"status": 422, "msg": "Dealing block data failed"}
+    )

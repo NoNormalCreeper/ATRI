@@ -26,8 +26,7 @@ class Anime(Service):
             res = await request.get(aim)
         except Exception:
             raise RequestError("Request failed!")
-        result = res.json()
-        return result
+        return res.json()
 
     @classmethod
     async def search(cls, url: str) -> str:
@@ -37,9 +36,9 @@ class Anime(Service):
         except Exception:
             return "没有相似的结果呢..."
 
-        d = dict()
+        d = {}
         for i in range(3):
-            if data[i]["anilist"]["title"]["native"] in d.keys():
+            if data[i]["anilist"]["title"]["native"] in d:
                 d[data[i]["anilist"]["title"]["native"]][0] += data[i]["similarity"]
             else:
                 from_m = data[i]["from"] / 60
@@ -48,11 +47,7 @@ class Anime(Service):
                 to_m = data[i]["to"] / 60
                 to_s = data[i]["to"] % 60
 
-                if not data[i]["episode"]:
-                    n = 1
-                else:
-                    n = data[i]["episode"]
-
+                n = data[i]["episode"] or 1
                 d[Translate(data[i]["anilist"]["title"]["native"]).to_simple()] = [
                     data[i]["similarity"],
                     f"第{n}集",
@@ -60,10 +55,8 @@ class Anime(Service):
                 ]
 
         result = sorted(d.items(), key=lambda x: x[1], reverse=True)
-        t = 0
         msg0 = str()
-        for i in result:
-            t += 1
+        for t, i in enumerate(result, start=1):
             s = "%.2f%%" % (i[1][0] * 100)
             msg0 = msg0 + (
                 "\n——————————\n"
@@ -87,5 +80,5 @@ async def _deal_sear(bot: Bot, event: MessageEvent):
 
     await bot.send(event, "别急，在找了")
     a = await Anime().search(img[0])
-    result = f"> {MessageSegment.at(user_id)}\n" + a
+    result = f"> {MessageSegment.at(user_id)}\n{a}"
     await anime_search.finish(Message(result))

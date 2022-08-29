@@ -37,9 +37,7 @@ def get_processing_data() -> tuple:
         raise GetStatusError("Getting runtime failed.")
 
     if p_cpu > 90:  # type: ignore
-        msg = "咱感觉有些头晕..."
-        if p_mem > 90:
-            msg = "咱感觉有点头晕并且有点累..."
+        msg = "咱感觉有点头晕并且有点累..." if p_mem > 90 else "咱感觉有些头晕..."
     elif p_mem > 90:
         msg = "咱感觉有点累..."
     elif disk > 90:
@@ -64,7 +62,7 @@ def get_processing_data() -> tuple:
 
 
 def get_service_list() -> dict:
-    result = dict()
+    result = {}
 
     files = os.listdir(SERVICES_DIR)
     for f in files:
@@ -98,13 +96,12 @@ def control_service(
     try:
         serv_data = ServiceTools().load_service(serv_name)
     except Exception:
-        return False, dict()
+        return False, {}
 
-    if is_enab != 1:
-        if is_enab == 0:
-            serv_data["enabled"] = False
-        else:
-            serv_data["enabled"] = True
+    if is_enab == 0:
+        serv_data["enabled"] = False
+    elif is_enab != 1:
+        serv_data["enabled"] = True
 
     if enab_u:
         if enab_u not in serv_data["disable_user"]:
@@ -129,7 +126,7 @@ def control_service(
     try:
         ServiceTools().save_service(serv_data, serv_name)
     except Exception:
-        return False, dict()
+        return False, {}
 
     return True, serv_data
 
@@ -188,7 +185,7 @@ def edit_block_list(is_enab: bool, user_id: str, group_id: str) -> tuple:
         with open(path, "w", encoding="utf-8") as w:
             w.write(json.dumps(g_d))
     except Exception:
-        return False, dict()
+        return False, {}
 
     return True, {"user": u_d, "group": g_d}
 

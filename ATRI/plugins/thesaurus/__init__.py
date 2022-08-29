@@ -84,8 +84,9 @@ async def _add_normal_item(
         operator,
         operator_id,
         1,
-        list(),
+        [],
     )
+
     await add_item.finish(result)
 
 
@@ -163,8 +164,9 @@ async def _add_group_item(
         operator,
         operator_id,
         0,
-        list(),
+        [],
     )
+
     await add_item_as_group_admin.finish(result)
 
 
@@ -223,8 +225,19 @@ async def _add_global_item(
     tm = ThesaurusManager()
 
     result = await tm.add_item(
-        item_id, True, item_q, ans, need_at, item_t, 0, operator, opeartor_id, 0, list()
+        item_id,
+        True,
+        item_q,
+        ans,
+        need_at,
+        item_t,
+        0,
+        operator,
+        opeartor_id,
+        0,
+        [],
     )
+
     await add_item_for_global.finish(result)
 
 
@@ -297,8 +310,7 @@ del_item = ThesaurusManager().cmd_as_group(
 
 @del_item.handle()
 async def _get_del_normal_item_info(matcher: Matcher, args: Message = CommandArg()):
-    msg = args.extract_plain_text()
-    if msg:
+    if msg := args.extract_plain_text():
         matcher.set_arg("ts_del_normal_item_id", args)
 
 
@@ -320,8 +332,7 @@ del_global_item = ThesaurusManager().cmd_as_group(
 
 @del_global_item.handle()
 async def _get_del_global_item_info(matcher: Matcher, args: Message = CommandArg()):
-    msg = args.extract_plain_text()
-    if msg:
+    if msg := args.extract_plain_text():
         matcher.set_arg("ts_del_global_item_id", args)
 
 
@@ -340,8 +351,7 @@ del_vote_item = ThesaurusManager().cmd_as_group(
 
 @del_vote_item.handle()
 async def _get_deal_vote_item_info(matcher: Matcher, args: Message = CommandArg()):
-    msg = args.extract_plain_text()
-    if msg:
+    if msg := args.extract_plain_text():
         matcher.set_arg("ts_del_vote_item_id", args)
 
 
@@ -356,7 +366,7 @@ async def _deal_del_vote_item(
     await del_vote_item.finish(result)
 
 
-_LIST_SHOW_DATA: dict = dict()
+_LIST_SHOW_DATA: dict = {}
 
 
 list_item = ThesaurusManager().cmd_as_group("list", "查看本群词条")
@@ -371,7 +381,7 @@ async def _get_normal_item_list(event: GroupMessageEvent):
     if not query_result:
         await list_item.finish("本群还没有词条呢...")
 
-    items = list()
+    items = []
     for i in query_result[:10]:
         item_matcher = i.matcher
         item_type = i.m_type
@@ -417,7 +427,7 @@ async def _get_normal_item_more(
         _LIST_SHOW_DATA[group_id] = {user_id: 10}
 
     tm = ThesaurusManager()
-    items = list()
+    items = []
     show_item = _LIST_SHOW_DATA[group_id][user_id]
     query_result = await tm.get_item_list({"group_id": group_id}, True)
     for i in query_result[:show_item]:
@@ -450,7 +460,7 @@ async def _get_global_item_list(event: MessageEvent):
     if not query_result:
         await list_global_item.finish("还没有给咱添加全局词条呢...")
 
-    items = list()
+    items = []
     for i in query_result[:10]:
         item_matcher = i.matcher
         item_type = i.m_type
@@ -495,7 +505,7 @@ async def _get_global_item_more(
         _LIST_SHOW_DATA[user_id] = 10
 
     tm = ThesaurusManager()
-    items = list()
+    items = []
     show_item = _LIST_SHOW_DATA[user_id]
     query_result = await tm.get_item_list({"group_id": 0}, True)
     for i in query_result[:show_item]:
@@ -529,7 +539,7 @@ async def _get_vote_item_list(event: GroupMessageEvent):
     if not query_result:
         await list_vote_item.finish("本群暂未添加待审核词条...")
 
-    items = list()
+    items = []
     for i in query_result[:10]:
         item_matcher = i.matcher
         item_type = i.m_type
@@ -575,7 +585,7 @@ async def _get_vote_item_more(
         _LIST_SHOW_DATA[group_id] = {user_id: 10}
 
     tm = ThesaurusManager()
-    items = list()
+    items = []
     show_item = _LIST_SHOW_DATA[group_id][user_id]
     query_result = await tm.get_item_list({"group_id": group_id})
     for i in query_result[:show_item]:
@@ -666,12 +676,10 @@ async def _get_audit_attitude(
             item_info.operator,
             item_info.operator_id,
             0,
-            list(),
+            [],
         )
-        await tm.del_item(item_id, group_id, False)
-    else:
-        await tm.del_item(item_id, group_id, False)
 
+    await tm.del_item(item_id, group_id, False)
     await audit_item.finish("完成～！")
 
 
@@ -692,8 +700,7 @@ get_normal_item_info = ThesaurusManager().cmd_as_group("i", "查看本群的词�
 
 @get_normal_item_info.handle()
 async def _info_normal_get_item_id(matcher: Matcher, args: Message = CommandArg()):
-    msg = args.extract_plain_text()
-    if msg:
+    if msg := args.extract_plain_text():
         matcher.set_arg("info_normal_item_id", args)
 
 
@@ -739,8 +746,7 @@ get_global_item_info = ThesaurusManager().cmd_as_group("i.g", "查看全局的�
 
 @get_global_item_info.handle()
 async def _info_global_get_item_id(matcher: Matcher, args: Message = CommandArg()):
-    msg = args.extract_plain_text()
-    if msg:
+    if msg := args.extract_plain_text():
         matcher.set_arg("info_global_item_id", args)
 
 
@@ -783,8 +789,7 @@ get_vote_item_info = ThesaurusManager().cmd_as_group("i.v", "查看本群的待�
 
 @get_vote_item_info.handle()
 async def _info_vote_get_item_id(matcher: Matcher, args: Message = CommandArg()):
-    msg = args.extract_plain_text()
-    if msg:
+    if msg := args.extract_plain_text():
         matcher.set_arg("info_vote_item_id", args)
 
 

@@ -30,8 +30,7 @@ add_sub = BilibiliDynamicSubscriptor().cmd_as_group("add", "添加b站up主订�
 
 @add_sub.handle()
 async def _bd_add_sub(matcher: Matcher, args: Message = CommandArg()):
-    msg = args.extract_plain_text()
-    if msg:
+    if msg := args.extract_plain_text():
         matcher.set_arg("bd_add_sub_id", args)
 
 
@@ -62,10 +61,7 @@ async def _bd_del_sub(event: GroupMessageEvent):
     if not query_result:
         await del_sub.finish("本群还未订阅任何up主呢...")
 
-    subs = list()
-    for i in query_result:
-        subs.append([i.up_nickname, i.uid])
-
+    subs = [[i.up_nickname, i.uid] for i in query_result]
     output = "本群订阅的up列表如下～\n" + tabulate(subs, headers=["up主", "uid"], tablefmt="plain")
     await del_sub.send(output)
 
@@ -102,7 +98,7 @@ async def _bd_get_sub_list(event: GroupMessageEvent):
     if not query_result:
         await get_sub_list.finish("本群还未订阅任何up主呢...")
 
-    subs = list()
+    subs = []
     for i in query_result:
         raw_tm = (
             i.last_update.replace(tzinfo=pytz.timezone("Asia/Shanghai"))
@@ -124,8 +120,7 @@ limit_content = BilibiliDynamicSubscriptor().cmd_as_group(
 
 @limit_content.handle()
 async def _bd_get_limit(matcher: Matcher, args: Message = CommandArg()):
-    msg = args.extract_plain_text()
-    if msg:
+    if msg := args.extract_plain_text():
         matcher.set_arg("bd_limit_int", args)
 
 
@@ -176,9 +171,7 @@ async def _check_bd():
 
         ts = m.last_update.timestamp()
         info: dict = await sub.get_up_recent_dynamic(m.uid)
-        result = list()
-        if info.get("cards", list()):
-            result = sub.extract_dyanmic(info["cards"])
+        result = sub.extract_dyanmic(info["cards"]) if info.get("cards", []) else []
         if not result:
             log.warning(f"无法获取up主 {m.up_nickname} 的动态")
             return

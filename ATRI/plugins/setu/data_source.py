@@ -32,7 +32,7 @@ class Setu(Service):
         """
         res = await request.get(LOLICON_URL)
         data: dict = res.json()
-        temp_data: dict = data.get("data", list())
+        temp_data: dict = data.get("data", [])
         if not temp_data:
             return "涩批爬", None
 
@@ -50,11 +50,11 @@ class Setu(Service):
         """
         指定tag涩图.
         """
-        url = LOLICON_URL + f"?tag={tag}"
+        url = f"{LOLICON_URL}?tag={tag}"
         res = await request.get(url)
         data: dict = res.json()
 
-        temp_data: dict = data.get("data", list())
+        temp_data: dict = data.get("data", [])
         if not temp_data:
             return f"没有 {tag} 的涩图呢...", None
 

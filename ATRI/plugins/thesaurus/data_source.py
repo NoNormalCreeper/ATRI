@@ -114,7 +114,7 @@ class ThesaurusManager(Service):
         )
         if query_result:
             item_info = query_result[0]
-            return f"""{"(需审核/投票)" if not is_main else str()}该词条已存在！！ ID: {item_info._id}"""
+            return f"""{str() if is_main else "(需审核/投票)"}该词条已存在！！ ID: {item_info._id}"""
 
         if t == "全匹配":
             m_type = 0
@@ -143,7 +143,7 @@ class ThesaurusManager(Service):
             item_meta,
             is_main,
         )
-        return f"""{"(需审核/投票)" if not is_main else str()}成功加上新词条 ID: {_id}"""
+        return f"""{str() if is_main else "(需审核/投票)"}成功加上新词条 ID: {_id}"""
 
     async def del_item(self, _id: str, group_id: int, is_main: bool):
         query_result = await self.get_item_list(

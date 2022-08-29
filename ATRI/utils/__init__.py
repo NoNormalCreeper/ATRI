@@ -15,8 +15,7 @@ from aiofiles.threadpool.text import AsyncTextIOWrapper
 def timestamp2datetimestr(timestamp: int) -> str:
     format = "%Y-%m-%d %H:%M:%S"
     tt = time.localtime(timestamp)
-    dt = time.strftime(format, tt)
-    return dt
+    return time.strftime(format, tt)
 
 
 def timestamp2datetime(value: float) -> datetime:
@@ -41,9 +40,7 @@ def load_yml(file: Path, encoding="utf-8") -> dict:
 
 
 def safe_string(value):
-    if isinstance(value, bytes):
-        return value.decode()
-    return str(value)
+    return value.decode() if isinstance(value, bytes) else str(value)
 
 
 def gen_random_str(k: int) -> str:
@@ -89,24 +86,14 @@ class MessageChecker:
         for i in _type:
             if i == "image":
                 result = re.findall(r"url=(.*?)]", self.text)
-                url = "" if not result else result[0]
-                if self.tenc_gchat_url not in url:
-                    return False
-                else:
-                    return True
-            if i in self.may_inject_keys:
-                return False
-            else:
-                return True
-        else:
-            return True
+                url = result[0] if result else ""
+                return self.tenc_gchat_url in url
+            return i not in self.may_inject_keys
+        return True
 
     @property
     def check_image_url(self) -> bool:
-        if self.tenc_gchat_url not in self.text:
-            return False
-        else:
-            return True
+        return self.tenc_gchat_url in self.text
 
 
 class FileDealer:
@@ -196,7 +183,7 @@ class Translate:
         for i in range(str_len):
             found_index = self.SIMPLE.find(self.text[i])
 
-            if not found_index == -1:
+            if found_index != -1:
                 output_str_list.append(self.TRADITION[found_index])
             else:
                 output_str_list.append(self.text[i])
@@ -210,7 +197,7 @@ class Translate:
         for i in range(str_len):
             found_index = self.TRADITION.find(self.text[i])
 
-            if not found_index == -1:
+            if found_index != -1:
                 output_str_list.append(self.SIMPLE[found_index])
             else:
                 output_str_list.append(self.text[i])

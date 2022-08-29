@@ -16,9 +16,7 @@ code_runner = CodeRunner().on_command("/code", "在线运行一段代码，获�
 
 @code_runner.handle([Cooldown(5, prompt=_flmt_notice)])
 async def _code_runner(matcher: Matcher, args: Message = CommandArg()):
-    msg = args.extract_plain_text()
-
-    if msg:
+    if msg := args.extract_plain_text():
         matcher.set_arg("opt", args)
     else:
         content = "请键入 /code.help 以获取帮助~！"

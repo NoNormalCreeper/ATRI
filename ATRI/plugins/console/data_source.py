@@ -31,8 +31,7 @@ class Console(Service):
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             s.connect(("8.8.8.8", 80))
-            ip = s.getsockname()[0]
-            return ip
+            return s.getsockname()[0]
         finally:
             if s:
                 s.close()
@@ -49,10 +48,8 @@ class Console(Service):
                 with open(df, "w", encoding="utf-8") as w:
                     w.write(json.dumps({}))
             except Exception:
-                raise WriteFileError("Writing file: " + str(df) + " failed!")
+                raise WriteFileError(f"Writing file: {str(df)} failed!")
 
         base_data: dict = json.loads(df.read_bytes())
-        data = base_data.get("data", None)
-        if not data:
-            return {"data": None}
-        return data
+        data = base_data.get("data")
+        return data or {"data": None}

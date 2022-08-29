@@ -32,8 +32,7 @@ my_name_is = Kimo().on_command("叫我", "更改kimo时的称呼", aliases={"我
 
 @my_name_is.handle([Cooldown(3, prompt=_chat_flmt_notice)])
 async def _name(matcher: Matcher, args: Message = CommandArg()):
-    msg = args.extract_plain_text()
-    if msg:
+    if msg := args.extract_plain_text():
         matcher.set_arg("name", args)
 
 

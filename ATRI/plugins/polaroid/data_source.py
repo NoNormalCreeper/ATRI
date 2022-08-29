@@ -21,8 +21,7 @@ class Polaroid(Service):
             res = await request.get(TENCENT_AVATER_URL.format(user_id=user_id))
         except Exception:
             raise RequestError("Request failed!")
-        data = res.read()
-        return data
+        return res.read()
 
     @classmethod
     async def generate(cls, user_id: str):

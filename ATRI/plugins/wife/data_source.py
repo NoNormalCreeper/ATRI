@@ -37,8 +37,7 @@ class Wife(Service):
                 ),
             ]
         )
-        result = MessageSegment.at(user_id) + content  # type: ignore
-        return result
+        return MessageSegment.at(user_id) + content
 
     @staticmethod
     def load_marry_list() -> dict:
@@ -51,8 +50,7 @@ class Wife(Service):
             with open(path, "w", encoding="utf-8") as w:
                 w.write(json.dumps({}))
 
-        data = json.loads(path.read_bytes())
-        return data
+        return json.loads(path.read_bytes())
 
     @staticmethod
     def save_marry_list(data: dict) -> None:

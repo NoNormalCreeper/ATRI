@@ -61,11 +61,10 @@ async def startup():
         log.info(commit_info)
 
     l_v, l_v_t = await CheckUpdate.show_latest_version()
-    if l_v and l_v_t:
-        if l_v != ATRI.__version__:
-            log.warning("新版本已发布, 请更新.")
-            log.warning(f"最新版本: {l_v} 更新时间: {l_v_t}")
-            sleep(3)
+    if l_v and l_v_t and l_v != ATRI.__version__:
+        log.warning("新版本已发布, 请更新.")
+        log.warning(f"最新版本: {l_v} 更新时间: {l_v_t}")
+        sleep(3)
 
     if not scheduler.running:
         scheduler.start()
@@ -89,12 +88,12 @@ async def _check_block(event: MessageEvent):
     path = MANEGE_DIR / user_file
     if not path.is_file():
         with open(path, "w", encoding="utf-8") as w:
-            w.write(json.dumps(dict()))
+            w.write(json.dumps({}))
 
     try:
         data = json.loads(path.read_bytes())
     except Exception:
-        data = dict()
+        data = {}
 
     user_id = event.get_user_id()
     if user_id in data:
@@ -105,12 +104,12 @@ async def _check_block(event: MessageEvent):
         path = MANEGE_DIR / group_file
         if not path.is_file():
             with open(path, "w", encoding="utf-8") as w:
-                w.write(json.dumps(dict()))
+                w.write(json.dumps({}))
 
         try:
             data = json.loads(path.read_bytes())
         except Exception:
-            data = dict()
+            data = {}
 
         group_id = str(event.group_id)
         if group_id in data:
@@ -157,7 +156,7 @@ async def _friend_add(bot: Bot, event: FriendRequestEvent):
     if not path.is_file():
         with open(path, "w", encoding="utf-8") as w:
             w.write(json.dumps({}))
-        data = dict()
+        data = {}
 
     apply_code = event.flag
     apply_comment = event.comment
@@ -203,7 +202,7 @@ async def _group_invite(bot: Bot, event: GroupRequestEvent):
     if not path.is_file():
         with open(path, "w", encoding="utf-8") as w:
             w.write(json.dumps({}))
-        data = dict()
+        data = {}
 
     apply_code = event.flag
     apply_comment = event.comment
@@ -272,12 +271,10 @@ async def _group_ban_event(bot: Bot, event: GroupBanNoticeEvent):
             f"咱在群 {event.group_id} 被 {event.operator_id} 塞上了口球...\n"
             f"时长...是 {event.duration} 秒"
         )
-        for superuser in BotSelfConfig.superusers:
-            await bot.send_private_msg(user_id=int(superuser), message=msg)
     else:
         msg = "好欸！主人\n" f"咱在群 {event.group_id} 的口球被 {event.operator_id} 解除了！"
-        for superuser in BotSelfConfig.superusers:
-            await bot.send_private_msg(user_id=int(superuser), message=msg)
+    for superuser in BotSelfConfig.superusers:
+        await bot.send_private_msg(user_id=int(superuser), message=msg)
 
 
 _acc_recall = True
@@ -307,12 +304,11 @@ async def _recall_group_event(bot: Bot, event: GroupRecallNoticeEvent):
     try:
         m = recall_msg_dealer(repo)
     except Exception:
-        check = MessageChecker(repo).check_cq_code
-        if not check:
-            m = repo
-        else:
+        if check := MessageChecker(repo).check_cq_code:
             return
 
+        else:
+            m = repo
     msg = f"主人，咱拿到了一条撤回信息！\n{user}@[群:{group}]\n撤回了\n{m}"
     for superuser in BotSelfConfig.superusers:
         await bot.send_private_msg(user_id=int(superuser), message=Message(msg))
@@ -338,12 +334,11 @@ async def _recall_private_event(bot: Bot, event: FriendRecallNoticeEvent):
     try:
         m = recall_msg_dealer(repo)
     except Exception:
-        check = MessageChecker(repo).check_cq_code
-        if not check:
-            m = repo
-        else:
+        if check := MessageChecker(repo).check_cq_code:
             return
 
+        else:
+            m = repo
     msg = f"主人，咱拿到了一条撤回信息！\n{user}@[私聊]撤回了\n{m}"
     for superuser in BotSelfConfig.superusers:
         await bot.send_private_msg(user_id=int(superuser), message=Message(msg))
@@ -379,7 +374,7 @@ async def _clear_cache():
 
 
 def recall_msg_dealer(msg: dict) -> str:
-    temp_m = list()
+    temp_m = []
 
     for i in msg:
         _type = i.get("type", "idk")
@@ -388,8 +383,7 @@ def recall_msg_dealer(msg: dict) -> str:
             temp_m.append(_data["text"])
         elif _type == "image":
             url = _data["url"]
-            check = MessageChecker(url).check_image_url
-            if check:
+            if check := MessageChecker(url).check_image_url:
                 temp_m.append(MessageSegment.image(url))
             else:
                 temp_m.append(f"[该图片可能包含非法内容，源url：{url}]")
@@ -398,5 +392,4 @@ def recall_msg_dealer(msg: dict) -> str:
         else:
             temp_m.append(f"[未知类型信息：{_data}]")
 
-    repo = str().join(map(str, temp_m))
-    return repo
+    return str().join(map(str, temp_m))

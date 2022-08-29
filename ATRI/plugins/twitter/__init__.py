@@ -30,8 +30,7 @@ add_sub = TwitterDynamicSubscriptor().cmd_as_group("add", "添加推主订阅")
 
 @add_sub.handle()
 async def _td_add_sub(matcher: Matcher, args: Message = CommandArg()):
-    msg = args.extract_plain_text()
-    if msg:
+    if msg := args.extract_plain_text():
         matcher.set_arg("td_add_sub_name", args)
 
 
@@ -58,10 +57,7 @@ async def _td_del_sub(event: GroupMessageEvent):
     if not query_result:
         await del_sub.finish("本群还没有订阅任何推主呢...")
 
-    subs = list()
-    for i in query_result:
-        subs.append([i.name, i.tid])
-
+    subs = [[i.name, i.tid] for i in query_result]
     output = "本群订阅的推主列表如下～\n" + tabulate(subs, headers=["推主名", "tid"], tablefmt="plain")
     await del_sub.send(output)
 
@@ -81,7 +77,7 @@ async def _td_deal_del_sub(
     tid = int(_tid)
     sub = TwitterDynamicSubscriptor()
 
-    result = await sub.del_sub(int(tid), group_id)
+    result = await sub.del_sub(tid, group_id)
     await del_sub.finish(result)
 
 
@@ -99,7 +95,7 @@ async def _td_get_sub_list(event: GroupMessageEvent):
     if not query_result:
         await get_sub_list.finish("本群还未订阅任何推主呢...")
 
-    subs = list()
+    subs = []
     for i in query_result:
         raw_tm = (
             i.last_update.replace(tzinfo=pytz.timezone("Asia/Shanghai"))
@@ -121,8 +117,7 @@ limit_content = TwitterDynamicSubscriptor().cmd_as_group(
 
 @limit_content.handle()
 async def _td_get_limit(matcher: Matcher, args: Message = CommandArg()):
-    msg = args.extract_plain_text()
-    if msg:
+    if msg := args.extract_plain_text():
         matcher.set_arg("td_limit_int", args)
 
 
@@ -176,7 +171,7 @@ async def _check_td():
         ) + timedelta(hours=8, minutes=8)
         ts = raw_ts.timestamp()
         info: dict = await sub.get_twitter_user_info(m.screen_name)
-        if not info.get("status", list()):
+        if not info.get("status", []):
             log.warning(f"无法获取推主 {m.name}@{m.screen_name} 的动态")
             return
 
@@ -187,7 +182,7 @@ async def _check_td():
         ts_t = raw_t.timestamp()
         if ts < ts_t:
 
-            raw_media = info["status"]["entities"].get("media", dict())
+            raw_media = info["status"]["entities"].get("media", {})
             _pic = raw_media[0]["media_url"] if raw_media else str()
 
             data = {

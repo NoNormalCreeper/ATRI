@@ -54,10 +54,9 @@ class TwitterDynamicSubscriptor(Service):
             raise TwitterDynamicError("删除订阅失败")
 
     async def get_sub_list(self, tid: int = int(), group_id: int = int()) -> list:
-        if not tid:
-            query_map = {"group_id": group_id}
-        else:
-            query_map = {"tid": tid, "group_id": group_id}
+        query_map = (
+            {"tid": tid, "group_id": group_id} if tid else {"group_id": group_id}
+        )
 
         try:
             async with DB() as db:
@@ -93,11 +92,7 @@ class TwitterDynamicSubscriptor(Service):
         Returns:
             str: 动态信息
         """
-        if not content_limit:
-            content = data["content"]
-        else:
-            content = data["content"][:content_limit]
-
+        content = data["content"][:content_limit] if content_limit else data["content"]
         return _DYNAMIC_OUTPUT_FORMAT.format(
             t_nickname=data["name"],
             t_dy_content=str(content)

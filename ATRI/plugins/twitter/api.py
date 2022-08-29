@@ -105,9 +105,7 @@ class API:
         url = "https://api.twitter.com/1.1/users/search.json"
         params = {"q": name, "count": 1}
         data = await self._request(url, params)
-        if not data:
-            return dict()
-        return data[0]
+        return data[0] if data else {}
 
     async def get_user_info(self, tid: int) -> dict:
         """通过提供的信息获取对应用户信息
@@ -120,9 +118,7 @@ class API:
         """
         url = f"https://api.twitter.com/2/users/{tid}"
         data = await self._request(url)
-        if not data:
-            return dict()
-        return data
+        return data or {}
 
     async def get_conversation(self, tweet_id: int) -> dict:
         """通过传入的值获取推文信息

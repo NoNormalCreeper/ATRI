@@ -55,10 +55,9 @@ class BilibiliDynamicSubscriptor(Service):
             raise BilibiliDynamicError("删除订阅失败")
 
     async def get_sub_list(self, uid: int = int(), group_id: int = int()) -> list:
-        if not uid:
-            query_map = {"group_id": group_id}
-        else:
-            query_map = {"uid": uid, "group_id": group_id}
+        query_map = (
+            {"uid": uid, "group_id": group_id} if uid else {"group_id": group_id}
+        )
 
         try:
             async with DB() as db:
@@ -76,15 +75,15 @@ class BilibiliDynamicSubscriptor(Service):
     async def __get_up_nickname(self, uid: int) -> str:
         api = API(uid)
         resp = await api.get_user_info()
-        data = resp.get("data", dict())
+        data = resp.get("data", {})
         return data.get("name", "unknown")
 
     async def get_up_recent_dynamic(self, uid: int) -> dict:
         api = API(uid)
         resp = await api.get_user_dynamics()
-        data = resp.get("data", dict())
+        data = resp.get("data", {})
         if not data:
-            return dict()
+            return {}
 
         if "cards" in data:
             for card in data["cards"]:
@@ -93,27 +92,25 @@ class BilibiliDynamicSubscriptor(Service):
         return data
 
     def extract_dyanmic(self, data: list) -> list:
-        result = list()
+        result = []
         for i in data:
-            pattern = {}
             desc = i["desc"]
             card = i["card"]
             type = desc["type"]
 
-            # common 部分
-            pattern["type"] = desc["type"]
-            pattern["uid"] = desc["uid"]
-            pattern["view"] = desc["view"]
-            pattern["repost"] = desc["repost"]
-            pattern["like"] = desc["like"]
-            pattern["dynamic_id"] = desc["dynamic_id"]
-            pattern["timestamp"] = desc["timestamp"]
-            pattern["time"] = timestamp2datetime(desc["timestamp"])
-            pattern["type_zh"] = str()
-
-            # alternative 部分
-            pattern["content"] = str()
-            pattern["pic"] = str()
+            pattern = {
+                "type": desc["type"],
+                "uid": desc["uid"],
+                "view": desc["view"],
+                "repost": desc["repost"],
+                "like": desc["like"],
+                "dynamic_id": desc["dynamic_id"],
+                "timestamp": desc["timestamp"],
+                "time": timestamp2datetime(desc["timestamp"]),
+                "type_zh": str(),
+                "content": str(),
+                "pic": str(),
+            }
 
             # 根据type区分 提取content
             if type == 1:  # 转发动态
@@ -159,11 +156,7 @@ class BilibiliDynamicSubscriptor(Service):
         Returns:
             str: 动态信息
         """
-        if not content_limit:
-            content = data["content"]
-        else:
-            content = data["content"][:content_limit]
-
+        content = data["content"][:content_limit] if content_limit else data["content"]
         return _OUTPUT_FORMAT.format(
             up_nickname=data["name"],
             up_dy_type=data["type_zh"],

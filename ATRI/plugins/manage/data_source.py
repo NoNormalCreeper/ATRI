@@ -40,11 +40,11 @@ class Manage(Service):
         if not path.is_file():
             with open(path, "w", encoding="utf-8") as w:
                 w.write(json.dumps({}))
-            return dict()
+            return {}
         try:
             data = json.loads(path.read_bytes())
         except Exception:
-            data = dict()
+            data = {}
         return data
 
     @staticmethod
@@ -73,12 +73,12 @@ class Manage(Service):
         if not path.is_file():
             with open(path, "w", encoding="utf-8") as w:
                 w.write(json.dumps({}))
-            return dict()
+            return {}
 
         try:
             data = json.loads(path.read_bytes())
         except Exception:
-            data = dict()
+            data = {}
         return data
 
     @staticmethod
@@ -162,17 +162,17 @@ class Manage(Service):
             data = ServiceTools().load_service(service)
         except Exception:
             return False
-        temp_list: list = data.get("disable_user", list())
+        temp_list: list = data.get("disable_user", [])
 
         if is_enabled:
             try:
                 temp_list.remove(user_id)
             except Exception:
                 return False
-        else:
-            if user_id in temp_list:
-                return True
+        elif user_id in temp_list:
+            return True
 
+        else:
             temp_list.append(user_id)
 
         data["disable_user"] = temp_list
@@ -189,17 +189,17 @@ class Manage(Service):
             data = ServiceTools().load_service(service)
         except Exception:
             return False
-        temp_list: list = data.get("disable_group", list())
+        temp_list: list = data.get("disable_group", [])
 
         if is_enabled:
             try:
                 temp_list.remove(group_id)
             except Exception:
                 return False
-        else:
-            if group_id in temp_list:
-                return True
+        elif group_id in temp_list:
+            return True
 
+        else:
             temp_list.append(group_id)
 
         data["disable_group"] = temp_list
@@ -213,12 +213,12 @@ class Manage(Service):
         if not path.is_file():
             with open(path, "w", encoding="utf-8") as w:
                 w.write(json.dumps({}))
-            return dict()
+            return {}
 
         try:
             data = json.loads(path.read_bytes())
         except Exception:
-            data = dict()
+            data = {}
         return data
 
     @staticmethod
@@ -239,12 +239,12 @@ class Manage(Service):
         if not path.is_file():
             with open(path, "w", encoding="utf-8") as w:
                 w.write(json.dumps({}))
-            return dict()
+            return {}
 
         try:
             data = json.loads(path.read_bytes())
         except Exception:
-            data = dict()
+            data = {}
         return data
 
     @staticmethod
@@ -269,7 +269,6 @@ class Manage(Service):
         time = data.get("time", "ignore")
         content = data.get("content", "ignore")
 
-        repo = TRACK_BACK_FORMAT.format(
+        return TRACK_BACK_FORMAT.format(
             track_id=track_id, prompt=prompt, time=time, content=content
         )
-        return repo

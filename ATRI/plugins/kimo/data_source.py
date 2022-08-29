@@ -24,8 +24,7 @@ class Kimo(Service):
     @staticmethod
     async def _request(url: str) -> dict:
         res = await request.get(url)
-        data = res.json()
-        return data
+        return res.json()
 
     @classmethod
     async def _generate_data(cls) -> None:

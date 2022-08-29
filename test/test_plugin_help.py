@@ -36,9 +36,7 @@ async def test_about_me(app: App):
     from ATRI.config import BotSelfConfig
     from ATRI.plugins.help import about
 
-    temp_list = list()
-    for i in BotSelfConfig.nickname:
-        temp_list.append(i)
+    temp_list = list(BotSelfConfig.nickname)
     nickname = "、".join(map(str, temp_list))
 
     Message = make_fake_message()
@@ -74,7 +72,7 @@ async def test_service_list(app: App):
     from ATRI.plugins.help import service_list
 
     files = os.listdir(SERVICES_DIR)
-    services = list()
+    services = []
     for f in files:
         prefix = f.replace(".json", "")
         f = os.path.join(SERVICES_DIR, f)

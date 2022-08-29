@@ -34,7 +34,7 @@ class CheckUpdate:
 
         c_info = commit_data["commit"]
         c_msg = c_info["message"]
-        c_sha = commit_data["sha"][0:5]
+        c_sha = commit_data["sha"][:5]
         c_time = c_info["author"]["date"]
 
         return f"Latest commit {c_msg} | sha: {c_sha} | time: {c_time}"

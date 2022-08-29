@@ -31,8 +31,7 @@ async def _(event: PrivateMessageEvent, is_pub_n: str = ArgPlainText("is_pub_n")
 
         d = json.loads(df.read_bytes())
 
-        ca = d.get("data", None)
-        if ca:
+        if ca := d.get("data", None):
             # 此处原本想用 matcher.finish 但这是在 try 里啊！
             await gen_console_key.send("咱已经告诉你了嗷！啊！忘了.../con.load 获取吧")
             return
@@ -52,7 +51,7 @@ async def _(event: PrivateMessageEvent, is_pub_n: str = ArgPlainText("is_pub_n")
         """.strip()
         await gen_console_key.send(msg)
 
-        raise WriteFileError("Writing file: " + str(df) + " failed!")
+        raise WriteFileError(f"Writing file: {str(df)} failed!")
 
     msg = f"""
     该信息已保存！可通过 /gauth 获取~
@@ -82,7 +81,7 @@ async def _(event: PrivateMessageEvent):
         d = json.loads(df.read_bytes())
     except Exception:
         await load_console_key.send("获取数据失败了...请自行打开文件查看吧:\n" + str(df))
-        raise ReadFileError("Reading file: " + str(df) + " failed!")
+        raise ReadFileError(f"Reading file: {str(df)} failed!")
 
     data = d["data"]
     msg = f"""
@@ -121,7 +120,7 @@ async def _(is_sure: str = ArgPlainText("is_sure_d")):
             w.write(json.dumps(data))
     except Exception:
         await del_console_key.send("销毁失败了...请至此处自行删除文件:\n" + str(df))
-        raise WriteFileError("Writing / Reading file: " + str(df) + " failed!")
+        raise WriteFileError(f"Writing / Reading file: {str(df)} failed!")
 
     await del_console_key.finish("销毁成功！如需再次获取: /con.auth")
 
@@ -147,7 +146,7 @@ async def _(is_sure: str = ArgPlainText("is_sure_r")):
             w.write(json.dumps(data))
     except Exception:
         await del_console_key.send("销毁失败了...请至此处自行删除文件:\n" + str(df))
-        raise WriteFileError("Writing / Reading file: " + str(df) + " failed!")
+        raise WriteFileError(f"Writing / Reading file: {str(df)} failed!")
 
 
 @res_console_key.got("is_pub_r_n", "咱的运行环境是否有公网(y/n)")
@@ -169,8 +168,7 @@ async def _(event: PrivateMessageEvent, is_pub_n: str = ArgPlainText("is_pub_n")
 
         d = json.loads(df.read_bytes())
 
-        ca = d.get("data", None)
-        if ca:
+        if ca := d.get("data", None):
             await res_console_key.send("咱已经告诉你了嗷！啊！忘了.../con.load 获取吧")
             return
 
@@ -188,7 +186,7 @@ async def _(event: PrivateMessageEvent, is_pub_n: str = ArgPlainText("is_pub_n")
         """.strip()
         await res_console_key.send(msg)
 
-        raise WriteFileError("Writing file: " + str(df) + " failed!")
+        raise WriteFileError(f"Writing file: {str(df)} failed!")
 
     msg = f"""
     该信息已保存！可通过 /con.load 获取~

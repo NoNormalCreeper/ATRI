@@ -114,13 +114,13 @@ async def _track_error(
         prompt = "请参考协议端输出"
         track_id = _save_error(prompt, format_exc())
     except Exception as err:
-        prompt = "Unknown ERROR->" + err.__class__.__name__
+        prompt = f"Unknown ERROR->{err.__class__.__name__}"
         track_id = _save_error(prompt, format_exc())
 
     if isinstance(event, PrivateMessageEvent):
-        _id = "用户" + event.get_user_id()
+        _id = f"用户{event.get_user_id()}"
     elif isinstance(event, GroupMessageEvent):
-        _id = "群" + str(event.group_id)
+        _id = f"群{str(event.group_id)}"
     else:
         _id = "unknown"
 
